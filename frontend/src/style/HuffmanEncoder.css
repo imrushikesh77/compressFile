@@ -1,0 +1,154 @@
+/* HuffmanEncoder.css */
+
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.huffman-encoder {
+  max-width: 800px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
+  transition: all 0.3s ease;
+}
+
+.file-drop-zone {
+  border: 3px dashed #6c5ce7;
+  border-radius: 15px;
+  padding: 3rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: rgba(108, 92, 231, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.file-drop-zone:hover {
+  background-color: rgba(108, 92, 231, 0.1);
+  transform: translateY(-5px);
+}
+
+.file-drop-zone p {
+  margin: 0;
+  color: #2d3436;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.remove-file {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.remove-file:hover {
+  background-color: #ee5253;
+  transform: translateY(-2px);
+}
+
+.encode-button, .decode-button {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
+}
+
+.encode-button:hover, .decode-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 14px rgba(108, 92, 231, 0.3);
+}
+
+.encode-button:disabled, .decode-button:disabled {
+  background: linear-gradient(135deg, #b8b5d1 0%, #c7c4e2 100%);
+  cursor: not-allowed;
+}
+
+.encode-button:disabled:hover, .decode-button:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
+}
+
+.file-download {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: rgba(108, 92, 231, 0.05);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.file-download:hover {
+  background-color: rgba(108, 92, 231, 0.1);
+}
+
+.file-download h2 {
+  margin-top: 0;
+  color: #2d3436;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.file-download a {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.8rem 1.5rem;
+  color: #fff;
+  background: linear-gradient(135deg, #00b894 0%, #55efc4 100%);
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 184, 148, 0.2);
+}
+
+.file-download a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 14px rgba(0, 184, 148, 0.3);
+}
+
+@media (max-width: 768px) {
+  .huffman-encoder {
+    padding: 2rem;
+  }
+  
+  .file-drop-zone {
+    padding: 2rem;
+  }
+  
+  .encode-button, .decode-button {
+    display: block;
+    width: 100%;
+    margin-right: 0;
+  }
+}
