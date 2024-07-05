@@ -20,7 +20,7 @@ const HuffmanEncoder = () => {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:3001/api/encode', {
+      const response = await fetch('https://compressfile-server.up.railway.app/api/encode', {
         method: 'POST',
         body: formData
       });
@@ -47,7 +47,7 @@ const HuffmanEncoder = () => {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:3001/api/decode', {
+      const response = await fetch('https://compressfile-server.up.railway.app/api/decode', {
         method: 'POST',
         body: formData
       });
