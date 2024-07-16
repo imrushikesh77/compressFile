@@ -5,12 +5,25 @@ const HuffmanEncoder = () => {
   const [file, setFile] = useState(null);
   const [encodedFile, setEncodedFile] = useState(null);
   const [decodedFile, setDecodedFile] = useState(null);
+  const [fileTypeError, setFileTypeError] = useState(false);
   const fileInputRef = useRef(null);
 
+  const acceptedFileTypes = [
+    ".txt", ".cpp", ".js", ".py", ".c", ".doc", ".html", ".css", ".json", 
+    ".xml", ".md", ".java", ".cs", ".rb", ".php", ".sh", ".huf"
+  ];
+
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-    setEncodedFile(null);
-    setDecodedFile(null);
+    const selectedFile = e.target.files[0];
+    if (isAcceptedFileType(selectedFile)) {
+      setFile(selectedFile);
+      setEncodedFile(null);
+      setDecodedFile(null);
+      setFileTypeError(false);
+    } else {
+      setFile(null);
+      setFileTypeError(true);
+    }
   };
 
   const handleEncodeFile = async () => {
@@ -20,7 +33,7 @@ const HuffmanEncoder = () => {
     formData.append('file', file);
 
     try {
-      const response = await fetch('https://compressfile-server.up.railway.app/api/encode', {
+      const response = await fetch("https://compressfile-server.up.railway.app/api/encode",{
         method: 'POST',
         body: formData
       });
@@ -32,7 +45,6 @@ const HuffmanEncoder = () => {
         setEncodedFile({ url, filename });
         setDecodedFile(null);
       } else {
-        // console.error('Error encoding file:', response.status);
         setEncodedFile(null);
       }
     } catch (error) {
@@ -58,7 +70,6 @@ const HuffmanEncoder = () => {
         setDecodedFile({ url });
         setEncodedFile(null);
       } else {
-        // console.error('Error decoding file:', response.status);
         setDecodedFile(null);
       }
     } catch (error) {
@@ -87,9 +98,15 @@ const HuffmanEncoder = () => {
     e.preventDefault();
     e.stopPropagation();
     const droppedFile = e.dataTransfer.files[0];
-    setFile(droppedFile);
-    setEncodedFile(null);
-    setDecodedFile(null);
+    if (isAcceptedFileType(droppedFile)) {
+      setFile(droppedFile);
+      setEncodedFile(null);
+      setDecodedFile(null);
+      setFileTypeError(false);
+    } else {
+      setFile(null);
+      setFileTypeError(true);
+    }
   };
 
   const handleZoneClick = () => {
@@ -101,7 +118,14 @@ const HuffmanEncoder = () => {
     setEncodedFile(null);
     setDecodedFile(null);
     fileInputRef.current.value = '';
+    setFileTypeError(false);
   };
+
+  const isAcceptedFileType = (file) => {
+    return file && acceptedFileTypes.includes(file.name.substring(file.name.lastIndexOf('.')));
+  };
+
+  console.log(isAcceptedFileType(file));
 
   return (
     <div className="huffman-encoder">
@@ -117,6 +141,7 @@ const HuffmanEncoder = () => {
           className="file-input" 
           ref={fileInputRef}
           style={{display: 'none'}}
+          accept={acceptedFileTypes.join(', ')}
         />
         {file ? (
           <div className="file-info">
@@ -125,6 +150,9 @@ const HuffmanEncoder = () => {
           </div>
         ) : (
           <p>Drag & Drop file here or click to browse</p>
+        )}
+        {fileTypeError && (
+          <p className="file-type-error">File type not supported</p>
         )}
       </div>
       <button onClick={handleEncodeFile} className="encode-button" disabled={!file}>Encode File</button>

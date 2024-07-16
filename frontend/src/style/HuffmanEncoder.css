@@ -12,6 +12,9 @@ body {
   box-sizing: border-box;
 }
 
+
+
+
 .huffman-encoder {
   max-width: 800px;
   width: 100%;
@@ -137,6 +140,11 @@ body {
   box-shadow: 0 7px 14px rgba(0, 184, 148, 0.3);
 }
 
+
+.file-type-error {
+  color: red;
+  margin-top: 10px;
+}
 @media (max-width: 768px) {
   .huffman-encoder {
     padding: 2rem;
