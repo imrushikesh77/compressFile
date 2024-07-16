@@ -1,9 +1,9 @@
 class HuffmanNode {
-  constructor(char, freq) {
+  constructor(char, freq, left = null, right = null) {
     this.char = char;
     this.freq = freq;
-    this.left = null;
-    this.right = null;
+    this.left = left;
+    this.right = right;
   }
 }
 
@@ -19,9 +19,7 @@ function buildHuffmanTree(text) {
   while (pq.length > 1) {
     const left = pq.shift();
     const right = pq.shift();
-    const parent = new HuffmanNode(null, left.freq + right.freq);
-    parent.left = left;
-    parent.right = right;
+    const parent = new HuffmanNode(null, left.freq + right.freq, left, right);
     pq.push(parent);
     pq.sort((a, b) => a.freq - b.freq);
   }
@@ -46,49 +44,18 @@ function generateHuffmanCodes(root) {
 }
 
 function encodeText(text, huffmanCodes) {
-  let encodedText = '';
-  for (let char of text) {
-    encodedText += huffmanCodes.get(char);
-  }
-  return encodedText;
-}
-
-function decodeText(encodedText, huffmanTree) {
-  if (!huffmanTree) {
-    throw new Error('Huffman tree is null or undefined');
-  }
-
-  let decodedText = '';
-  let current = huffmanTree;
-
-  for (let bit of encodedText) {
-    if (!current) {
-      throw new Error('Current node became null during traversal');
-    }
-
-    current = bit === '0' ? current.left : current.right;
-
-    if (current.char !== null) {
-      decodedText += current.char;
-      current = huffmanTree;
-    }
-  }
-
-  return decodedText;
+  return text.split('').map(char => huffmanCodes.get(char)).join('');
 }
 
 function compressTree(node) {
   if (node.char !== null) {
-    return '1' + node.char;
+    const charCode = node.char.charCodeAt(0);
+    return '1' + charCode.toString(2).padStart(8, '0');
   }
   return '0' + compressTree(node.left) + compressTree(node.right);
 }
 
 function decompressTree(data) {
-  if (!data || data.length === 0) {
-    return null;
-  }
-
   let index = 0;
 
   function buildTree() {
@@ -98,39 +65,36 @@ function decompressTree(data) {
 
     if (data[index] === '1') {
       index++;
-      const char = data[index];
-      index++;
-      return new HuffmanNode(char, 0);
+      const charCode = parseInt(data.substr(index, 8), 2);
+      index += 8;
+      return new HuffmanNode(String.fromCharCode(charCode), 0);
     }
 
     index++;
     const left = buildTree();
     const right = buildTree();
-    const parent = new HuffmanNode(null, 0);
-    parent.left = left;
-    parent.right = right;
-    return parent;
+    return new HuffmanNode(null, 0, left, right);
   }
 
   return buildTree();
 }
 
-function compressToBinary(text) {
-  let compressed = '';
-  for (let i = 0; i < text.length; i += 8) {
-    compressed += String.fromCharCode(parseInt(text.substr(i, 8), 2));
-  }
-  return compressed;
-}
+function decodeText(encodedText, huffmanTree) {
+  let decodedText = '';
+  let current = huffmanTree;
 
-function decompressFromBinary(compressed) {
-  let text = '';
-  for (let i = 0; i < compressed.length; i++) {
-    let bin = compressed.charCodeAt(i).toString(2);
-    bin = '0'.repeat(8 - bin.length) + bin;
-    text += bin;
+  for (let bit of encodedText) {
+    if (!current) {
+      throw new Error('Invalid encoded text');
+    }
+    current = bit === '0' ? current.left : current.right;
+    if (current.char !== null) {
+      decodedText += current.char;
+      current = huffmanTree;
+    }
   }
-  return text;
+
+  return decodedText;
 }
 
 function encodeAndSave(text) {
@@ -139,23 +103,35 @@ function encodeAndSave(text) {
   const encodedText = encodeText(text, huffmanCodes);
   const compressedTree = compressTree(tree);
   
-  // Combine compressed tree and encoded text with a separator
-  const fullEncoded = compressedTree + '|' + encodedText;
-  
-  // Convert to binary
-  const binaryData = compressToBinary(fullEncoded);
-  
-  return binaryData;
+  const treeLengthBinary = compressedTree.length.toString(2).padStart(16, '0');
+  const fullEncoded = treeLengthBinary + compressedTree + encodedText;
+  return compressToBinary(fullEncoded);
 }
 
-function decodeAndSave(binaryData) {
-  const fullEncoded = decompressFromBinary(binaryData);
-  const [compressedTree, encodedText] = fullEncoded.split('|');
+function decodeAndSave(buffer) {
+  const fullEncoded = decompressFromBinary(buffer);
+  
+  const treeLength = parseInt(fullEncoded.slice(0, 16), 2);
+  const compressedTree = fullEncoded.slice(16, 16 + treeLength);
+  const encodedText = fullEncoded.slice(16 + treeLength);
   
   const tree = decompressTree(compressedTree);
-  const decodedText = decodeText(encodedText, tree);
-  
-  return decodedText;
+  return decodeText(encodedText, tree);
+}
+
+function compressToBinary(text) {
+  const buffer = Buffer.alloc(Math.ceil(text.length / 8));
+  for (let i = 0; i < text.length; i += 8) {
+    const byte = text.substr(i, 8).padEnd(8, '0');
+    buffer.writeUInt8(parseInt(byte, 2), i / 8);
+  }
+  return buffer;
+}
+
+function decompressFromBinary(buffer) {
+  return Array.from(buffer)
+    .map(byte => byte.toString(2).padStart(8, '0'))
+    .join('');
 }
 
 export {
